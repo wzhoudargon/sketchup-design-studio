@@ -1,0 +1,7 @@
+{
+  "validation": "mock UTF-8 bytes only; not tokens, quota, cost or native SketchUp",
+  "steps": 70,
+  "full_bytes": 2178,
+  "brief_bytes": 249,
+  "reduction_percent": 88.6
+}

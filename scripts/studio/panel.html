@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'none'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>建模生成过程</title>
+  <link rel="stylesheet" href="panel.css">
+  <script src="panel.js" defer></script>
+</head>
+<body>
+<main>
+  <header><span class="eyebrow">SKETCHUP DESIGN STUDIO · 1.2.1</span><span id="state" class="badge">连接中</span></header>
+  <h1 id="title">模型逐步生成</h1>
+  <p id="step" class="step">等待 SketchUp 发送任务状态…</p>
+  <section aria-label="建模进度">
+    <div class="progress-label"><strong id="percent">0%</strong><span id="count">0 / 0 步</span></div>
+    <progress id="progress" value="0" max="100" aria-label="已完成步骤百分比"></progress>
+    <div id="phases" class="phases"></div>
+  </section>
+  <div class="settings">
+    <label>生成方式<select id="mode" disabled><option value="animated">演示生成</option><option value="fast">快速生成</option></select></label>
+    <label>展示速度<select id="speed" disabled><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+  </div>
+  <div class="controls">
+    <button id="pause" disabled>暂停</button><button id="resume" class="primary" disabled>继续</button>
+    <button id="single" disabled>下一步</button><button id="cancel" class="danger" disabled>停止生成</button>
+  </div>
+  <p id="hint" class="hint">进度对应实际完成的建模步骤，不是预计剩余时间。</p>
+  <p id="error" class="error" role="alert" hidden></p>
+  <p id="warning" class="warning" hidden></p>
+  <p id="message" class="message" role="status" hidden></p>
+  <details><summary>最近完成的步骤</summary><ol id="history"></ol></details>
+  <footer><span id="job" class="job"></span><button id="report" class="link" disabled>导出记录</button></footer>
+  <p class="footnote">关闭面板会暂停任务。停止保留已完成部分，不等于撤销全部。完成后请另存模型并核对尺寸。</p>
+</main>
+</body>
+</html>
