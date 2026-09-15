@@ -1,57 +1,69 @@
 # SketchUp 空间设计工作室
 
-面向建筑与室内设计的 Codex Skill，调用名为 `sketchup-design-studio`。
+**v1.2.1 · 候选更新｜真实生成动画、完成状态防陈旧、低开销接入**
 
-围绕概念推敲、方案深化、局部改稿及设计交接组织 SketchUp 建模工作，重点维护空间尺度、构件关系与模型的后续可编辑性。
+面向建筑、室内与空间设计的 Codex Skill，调用 `$sketchup-design-studio`。保留参考还原、尺度控制、中文命名、可编辑构件、局部改稿、场景与 Enscape 工作流，包含 SketchUp 内分步建模的 Ruby 执行器和中文面板。
 
-当前版本：**v1.1.1**。本版补充门窗尺寸配合、构件连接和验收的基础规范：保留有意镂空、设计缝与真实高差，优先检查本轮改动及相邻节点，同类构件选代表检查，发现异常再局部核对，避免默认进行全楼审计或重复检查。
+> 新运行时尚未完成原生 SketchUp 与外部工作台联调。静态/模拟测试不等于几何与宿主兼容性验收。本仓库不包含 SketchUp 或现用外部 Ruby 工作台/连接器。
 
-## 主要能力
+## 本次更新
 
-- 根据图纸、草图与已知尺寸建立尺度和定位基准，按设计阶段控制模型精度。
-- 组织体量、墙板、门窗与装配构件，明确框、扇、玻璃等独立修改入口。
-- 处理墙线、标高及开口调整时的关联范围，并保留已有手工修改。
-- 管理材料分区、备选材质与 A/B 方案，准备一致机位的对比表达。
-- 统一采用中文设计词汇和中点分隔的对象命名，记录实际使用素材的来源与依赖。
-- 按实际环境交付可编辑模型或待执行 Ruby 程序，并明确验证状态。
-- 按参考资料生成任务特定的还原检查项，区分照图重建、风格参考和局部修改。
-- 组织与输出对应的 SU 场景，按项目选择机位与投影，并遵守指定的场景总数。
-- 沿用模型材质，核实 Enscape 执行环境，进行试渲染、调整与成图及预设交付。
+| 功能 | 行为 |
+|---|---|
+| 完成状态防陈旧 | 核对模型内任务标识、版本、步数与最后一步；完成后撤销/重做/后续提交使旧证明失效 |
+| 精简状态接口 | `status_brief_json(job_id)` 返回摘要；原全量接口默认行为仍兼容 |
+| 失效提示 | 步骤历史仍可为 completed，但 completion_valid=false，面板提示重新验收 |
+| 本地通知策略 | 示例将逐步进度留本地，只在需要注意时通知；须接入外部工作台 |
+| 资源清理 | 完成后保留轻量观察器；任务上限 16，清出时释放监视器 |
+| 规划与验收 | [版本路线图](docs/版本迭代路线图.md)、[实机验收清单](docs/实机验收清单.md) |
 
-## 安装
+保留 v1.2.0 的演示/快速模式、暂停/继续/单步/停止、倍速、独立任务组、重复计划保护与 JSON 记录。局部改稿不为动画重建全案。几何辅助函数仅用于盒体和生长示例，不是完整建筑构件库。
 
-将整个仓库作为一个技能目录安装，确保 `SKILL.md` 位于该目录根层级。例如在 macOS 或 Linux 上：
+## 安装与试用
+
+详见 [安装与快速开始](安装与快速开始.md)。先备份旧版本到 Skill 扫描目录之外，再替换完整文件夹，不能只复制 SKILL.md。更新后重启 SketchUp，避免 Ruby 缓存混用。
+
+```text
+Windows：%USERPROFILE%\.agents\skills\sketchup-design-studio
+macOS：~/.agents/skills/sketchup-design-studio
+```
+
+目标：SketchUp 2022+ 桌面版 Windows/macOS，仍待实机验证。另建空白测试模型，退出组件编辑，活动标签设为 Untagged/Layer0；模板有默认人物时仅在测试模型中删除。
+
+```ruby
+load File.expand_path('~/.agents/skills/sketchup-design-studio/scripts/sketchup_studio.rb')
+SketchupDesignStudio::VERSION # 应为 "1.2.1"
+SketchupDesignStudio.demo
+```
+
+70 步演示：地台 → 四柱长高 → 梁架 → 顶棚格栅 → 坐凳。加载不自动生成、不保存。关窗暂停；重开用 `SketchupDesignStudio.show_panel`。
+
+## 工作台接入
+
+```ruby
+# 使用 submit 返回的完整 job_id，在后续独立调用中查询。
+puts SketchupDesignStudio.status_brief_json(job_id)
+# 诊断才取完整历史。
+puts SketchupDesignStudio.status_json(job_id)
+# 自动保存/导出前验证执行完成状态。
+model = SketchupDesignStudio.assert_completed!(job_id)
+```
+
+`submit` 返回不等于完成。工作台本地轮询进度，不让 Astra 每一步发起新回合，不在 SU 主线程 sleep/忙等。详见 [生成动画与接入](references/generation-animation.md)。
+
+门禁核查执行记录和检测到的变更，不替代几何、视觉或法规检查，也不拦截原生保存。完成后检测到同模型提交会保守撤销旧证明，可能包含无关编辑；本版不做对象级归因，不自动重新认证。停止不等于全量撤销，每步有独立撤销记录。
+
+## 文件与验证
+
+`SKILL.md` 为设计入口，`scripts/` 为运行时和面板，`examples/` 为亭架、墙体和本地通知策略，`references/` 为按需文档，`tests/` 为模拟/JavaScript 测试，`tools/` 为检查与测量，`docs/` 为路线图、报告和验收记录。
+
+见 [v1.2.1 修改与测试报告](docs/v1.2.1_修改与测试报告.md)。开发检查：
 
 ```bash
-git clone https://github.com/wzhoudargon/sketchup-design-studio.git "$HOME/.agents/skills/sketchup-design-studio"
+python tools/check_repo.py
+ruby tools/measure_status.rb
 ```
 
-私有仓库需要具有访问权限的 GitHub 账号。目标目录已存在时，先检查现有内容，不覆盖已有修改。Codex 重新扫描后可使用；若界面尚未显示，重新打开 Codex。
+仅开发测试需要 Python 3.9+、Ruby + minitest、Node.js 18+；SU 运行不另装这些依赖。CI 配置包括 Ruby 2.7/3.3，是否实际通过以对应提交检查为准。
 
-## 使用示例
-
-```text
-用 $sketchup-design-studio 根据这张平面图搭建方案模型，先完成空间关系，再深化入口和窗洞。
-```
-
-```text
-用 $sketchup-design-studio 把客厅东墙外移 600 毫米，保留我调整过的家具位置和地板材质。
-```
-
-## 文件结构
-
-- `SKILL.md`：设计流程与模型组织约定。
-- `references/ruby-workflow.md`：程序化建模时按需读取的执行和改稿约定。
-- `references/design-views.md`：设计表达视角、场景管理与图像映射。
-- `references/enscape-workflow.md`：材质与机位保留、Enscape 试渲染及输出验证。
-- `agents/openai.yaml`：中文界面名称与简介。
-
-## 能力与验证边界
-
-本仓库提供指令与工作方法，不包含 SketchUp 应用、操作连接器或渲染引擎。原生 `.skp` 的创建和验收需要实际 SketchUp 执行环境；环境不足时只能交付待运行的 `.rb`。Enscape 流程需要本机插件及可用操作通道，Skill 不自带 Enscape MCP 或许可证。
-
-技能已通过结构检查，并检查参考还原、风格参考和局部改稿等情境的规则适用性。在 SketchUp 2022 的一例住宅项目中，已验证原生模型生成、文件保存与重开、部分构件可编辑性和六场景整理。该案例采用估算尺寸与简化几何，不构成施工精度或普遍还原能力的验证。
-
-Enscape 3.5 已在该案例中启动并显示实时轴测渲染；操作在正式导出前停止，尚未完成 PNG 导出、预设文件恢复和重渲染的完整验证。复杂异形专项流程尚未形成，也未通过实机案例验证。
-
-本技能在 `sketchup-editable-model` 的建模能力范围基础上重新组织和编写，并采用新的名称、设计工作流及统一命名规则。
+不自带 Ruby 沙箱、远程服务、视频导出、跨重启恢复、整次单步撤销或自动保存；只运行可信任务代码。原 v1.1.1 住宅/Enscape 案例属于历史记录，不构成新增动画的实机验收。v1.3/v1.4 仅规划，未包含在本版能力中。本技能在原 sketchup-editable-model 能力范围基础上重新组织工作流与命名规则。

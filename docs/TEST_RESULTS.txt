@@ -1,0 +1,205 @@
+Structure, Skill frontmatter, version and local Markdown links: PASS
+
+$ ruby -v
+ruby 3.3.8 (2025-04-09 revision b200bad6cd) [x86_64-linux-gnu]
+
+$ node -v
+v22.16.0
+
+$ ruby -c examples/animated_pavilion.rb
+Syntax OK
+
+$ ruby -c examples/task_template.rb
+Syntax OK
+
+$ ruby -c scripts/sketchup_studio.rb
+Syntax OK
+
+$ ruby -c scripts/studio/geometry.rb
+Syntax OK
+
+$ ruby -c scripts/studio/model_guard.rb
+Syntax OK
+
+$ ruby -c scripts/studio/panel.rb
+Syntax OK
+
+$ ruby -c scripts/studio/runner.rb
+Syntax OK
+
+$ ruby -c tests/integration_test.rb
+Syntax OK
+
+$ ruby -c tests/reliability_test.rb
+Syntax OK
+
+$ ruby -c tests/runner_test.rb
+Syntax OK
+
+$ ruby -c tests/support/fakes.rb
+Syntax OK
+
+$ ruby -c tests/support/sketchup.rb
+Syntax OK
+
+$ ruby -c tools/measure_status.rb
+Syntax OK
+
+$ node --check examples/workbench_notification_policy.js
+
+$ node --check scripts/studio/panel.js
+
+$ node --check tests/notification_policy_test.js
+
+$ node --check tests/panel_test.js
+
+$ ruby -Itests -e Dir["tests/*_test.rb"].sort.each { |f| require_relative f }
+Run options: --seed 12918
+
+# Running:
+
+...........................................................................................
+
+Finished in 0.036749s, 2476.2418 runs/s, 9605.6413 assertions/s.
+
+91 runs, 353 assertions, 0 failures, 0 errors, 0 skips
+
+$ node --test tests/notification_policy_test.js tests/panel_test.js
+TAP version 13
+# Subtest: 70 local progress updates and one completion notification
+ok 1 - 70 local progress updates and one completion notification
+  ---
+  duration_ms: 1.155336
+  type: 'test'
+  ...
+# Subtest: unchanged terminal state is deduplicated
+ok 2 - unchanged terminal state is deduplicated
+  ---
+  duration_ms: 0.160162
+  type: 'test'
+  ...
+# Subtest: invalidated completion notifies even with unchanged revision
+ok 3 - invalidated completion notifies even with unchanged revision
+  ---
+  duration_ms: 0.123437
+  type: 'test'
+  ...
+# Subtest: pause resume pause notifies each new pause
+ok 4 - pause resume pause notifies each new pause
+  ---
+  duration_ms: 0.108855
+  type: 'test'
+  ...
+# Subtest: out of order status is ignored
+ok 5 - out of order status is ignored
+  ---
+  duration_ms: 0.147483
+  type: 'test'
+  ...
+# Subtest: independent job identities and changed errors
+ok 6 - independent job identities and changed errors
+  ---
+  duration_ms: 0.173162
+  type: 'test'
+  ...
+# Subtest: malformed status is rejected
+ok 7 - malformed status is rejected
+  ---
+  duration_ms: 0.44369
+  type: 'test'
+  ...
+# Subtest: bounded memory evicts oldest job
+ok 8 - bounded memory evicts oldest job
+  ---
+  duration_ms: 0.116176
+  type: 'test'
+  ...
+# Subtest: handshake calls Ruby only when attached
+ok 9 - handshake calls Ruby only when attached
+  ---
+  duration_ms: 2.224352
+  type: 'test'
+  ...
+# Subtest: offline browser never pretends to be SketchUp
+ok 10 - offline browser never pretends to be SketchUp
+  ---
+  duration_ms: 0.682352
+  type: 'test'
+  ...
+# Subtest: running state shows actual progress and disables resume
+ok 11 - running state shows actual progress and disables resume
+  ---
+  duration_ms: 1.936598
+  type: 'test'
+  ...
+# Subtest: paused state enables single step
+ok 12 - paused state enables single step
+  ---
+  duration_ms: 0.623452
+  type: 'test'
+  ...
+# Subtest: completed state disables all modeling controls
+ok 13 - completed state disables all modeling controls
+  ---
+  duration_ms: 0.832128
+  type: 'test'
+  ...
+# Subtest: cancelled is not displayed as 100 percent
+ok 14 - cancelled is not displayed as 100 percent
+  ---
+  duration_ms: 0.613197
+  type: 'test'
+  ...
+# Subtest: fast mode disables speed but allows mode switch
+ok 15 - fast mode disables speed but allows mode switch
+  ---
+  duration_ms: 0.874171
+  type: 'test'
+  ...
+# Subtest: labels and errors use textContent, never HTML
+ok 16 - labels and errors use textContent, never HTML
+  ---
+  duration_ms: 0.950146
+  type: 'test'
+  ...
+# Subtest: phase list is replaced rather than accumulating
+ok 17 - phase list is replaced rather than accumulating
+  ---
+  duration_ms: 0.778566
+  type: 'test'
+  ...
+# Subtest: controls invoke allowed Ruby bridge actions
+ok 18 - controls invoke allowed Ruby bridge actions
+  ---
+  duration_ms: 0.88667
+  type: 'test'
+  ...
+# Subtest: progress is clamped to valid bounds
+ok 19 - progress is clamped to valid bounds
+  ---
+  duration_ms: 0.619206
+  type: 'test'
+  ...
+# Subtest: clearing an error hides the error banner
+ok 20 - clearing an error hides the error banner
+  ---
+  duration_ms: 0.576421
+  type: 'test'
+  ...
+# Subtest: stale completion warns rather than suggesting immediate delivery
+ok 21 - stale completion warns rather than suggesting immediate delivery
+  ---
+  duration_ms: 0.557262
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 70.935167
+
+PASS — These are mock/static tests, NOT native SketchUp validation.

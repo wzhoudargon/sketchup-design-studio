@@ -1,3 +1,4 @@
 interface:
   display_name: "SketchUp 空间设计工作室"
-  short_description: "建筑与室内的参考还原、可编辑建模、场景视角和 Enscape 渲染交付"
+  short_description: "建筑与室内可编辑建模、实时生成过程、局部改稿、场景表达与渲染交付"
+  default_prompt: "用 $sketchup-design-studio 完成本轮建模或改稿；新建模型优先展示逐步生成过程，保留既有成果，并报告真实完成与验证状态。"
